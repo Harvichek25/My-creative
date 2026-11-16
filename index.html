@@ -1,19 +1,205 @@
-✨ My Creative Studio
-Your private AI video creation studio
-Welcome to your studio!
-Let's create something wonderful.
-🎬 Video Editor
-Upload your own videos.
-Choose video
-✨ AI Video Maker
-Create videos from your ideas.
-Coming soon
-📸 Photo Animation
-Animate your photographs.
-Coming soon
-🎤 Voice & Music
-Add narration and music.
-Coming soon
-My Workspace
-Your workspace is ready.
-My Creative Studio © 2026
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>My Creative Studio</title>
+<style>
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #17182a;
+  color: white;
+}
+header {
+  padding: 25px;
+  background: #292641;
+  text-align: center;
+}
+h1, h2 { color: #e4c5ff; }
+main {
+  max-width: 950px;
+  margin: auto;
+  padding: 20px;
+}
+.card {
+  background: #292b43;
+  padding: 22px;
+  border-radius: 14px;
+  border: 1px solid #55506f;
+  margin-bottom: 18px;
+}
+button, .upload {
+  display: inline-block;
+  background: #9268c9;
+  color: white;
+  padding: 12px 18px;
+  border: 0;
+  border-radius: 8px;
+  cursor: pointer;
+  margin: 5px 3px;
+}
+input {
+  max-width: 100%;
+  padding: 8px;
+  border-radius: 6px;
+}
+video {
+  width: 100%;
+  max-height: 420px;
+  margin-top: 15px;
+  background: black;
+}
+.controls {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.controls label { display: block; }
+footer {
+  text-align: center;
+  padding: 25px;
+  color: #aaa;
+}
+</style>
+</head>
+<body>
+
+<header>
+<h1>â¨ My Creative Studio</h1>
+<p>Your private creative workspace</p>
+</header>
+
+<main>
+<h2>Welcome to your studio!</h2>
+
+<div class="card">
+<h2>ð¬ Video Editor</h2>
+<p>Choose a video from your iPad.</p>
+<input type="file" id="videoFile" accept="video/*">
+<video id="preview" controls playsinline></video>
+<p id="status">No video loaded yet.</p>
+</div>
+
+<div class="card">
+<h2>âï¸ Video Trimming</h2>
+<p>Choose the part of your video you want to keep.</p>
+
+<div class="controls">
+<label>
+Start time (seconds)
+<input type="number" id="startTime" min="0" value="0" step="0.5">
+</label>
+
+<label>
+End time (seconds)
+<input type="number" id="endTime" min="0" value="0" step="0.5">
+</label>
+</div>
+
+<p id="duration">Video duration: --</p>
+
+<button id="playSelection">â¶ Preview selected section</button>
+<button id="stopPreview">â  Stop</button>
+
+<p id="trimStatus">Load a video to begin.</p>
+</div>
+
+<div class="card">
+<h2>â¨ AI Video Maker</h2>
+<p>Create videos from your ideas.</p>
+<p>Coming soon</p>
+</div>
+
+<div class="card">
+<h2>ð¸ Photo Animation</h2>
+<p>Animate your photographs.</p>
+<p>Coming soon</p>
+</div>
+
+<div class="card">
+<h2>ð¤ Voice & Music</h2>
+<p>Add narration and music.</p>
+<p>Coming soon</p>
+</div>
+
+<div class="card">
+<h2>My Workspace</h2>
+<p>Your creative projects will be developed here.</p>
+</div>
+</main>
+
+<footer>My Creative Studio Â© 2026</footer>
+
+<script>
+const input = document.getElementById("videoFile");
+const video = document.getElementById("preview");
+const status = document.getElementById("status");
+const start = document.getElementById("startTime");
+const end = document.getElementById("endTime");
+const duration = document.getElementById("duration");
+const trimStatus = document.getElementById("trimStatus");
+
+let videoURL = null;
+let selectionPlaying = false;
+
+input.addEventListener("change", function() {
+  const file = this.files[0];
+  if (!file) return;
+
+  if (videoURL) URL.revokeObjectURL(videoURL);
+  videoURL = URL.createObjectURL(file);
+  video.src = videoURL;
+  status.textContent = "Video loaded: " + file.name;
+  trimStatus.textContent = "Your video is ready to preview.";
+});
+
+video.addEventListener("loadedmetadata", function() {
+  start.value = 0;
+  end.value = video.duration.toFixed(1);
+  end.max = video.duration;
+  start.max = video.duration;
+  duration.textContent =
+    "Video duration: " + video.duration.toFixed(1) + " seconds";
+});
+
+document.getElementById("playSelection").addEventListener("click", function() {
+  const from = Number(start.value);
+  const to = Number(end.value);
+
+  if (!video.src) {
+    trimStatus.textContent = "Please load a video first.";
+    return;
+  }
+
+  if (from < 0 || to > video.duration || from >= to) {
+    trimStatus.textContent = "Please enter a valid start and end time.";
+    return;
+  }
+
+  video.currentTime = from;
+  selectionPlaying = true;
+  video.play();
+  trimStatus.textContent =
+    "Previewing from " + from + " to " + to + " seconds.";
+});
+
+video.addEventListener("timeupdate", function() {
+  if (selectionPlaying && video.currentTime >= Number(end.value)) {
+    video.pause();
+    selectionPlaying = false;
+    trimStatus.textContent = "Selected section preview finished.";
+  }
+});
+
+document.getElementById("stopPreview").addEventListener("click", function() {
+  video.pause();
+  selectionPlaying = false;
+  trimStatus.textContent = "Preview stopped.";
+});
+</script>
+
+</body>
+</html>
