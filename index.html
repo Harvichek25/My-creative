@@ -1,205 +1,991 @@
-
 <!DOCTYPE html>
+
 <html lang="en">
+
 <head>
+
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>My Creative Studio</title>
+
 <style>
-* { box-sizing: border-box; }
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background: #17182a;
-  color: white;
+
+*{box-sizing:border-box}
+
+body{
+
+  margin:0;
+
+  font-family:Arial,sans-serif;
+
+  background:#101426;
+
+  color:#fff;
+
 }
-header {
-  padding: 25px;
-  background: #292641;
-  text-align: center;
+
+header{
+
+  padding:25px 18px;
+
+  text-align:center;
+
+  background:linear-gradient(120deg,#6038a8,#bd477f,#e78a55);
+
 }
-h1, h2 { color: #e4c5ff; }
-main {
-  max-width: 950px;
-  margin: auto;
-  padding: 20px;
+
+header h1{margin:0;font-size:27px}
+
+header p{margin:8px 0 0;color:#f7eafa}
+
+nav{
+
+  display:flex;
+
+  flex-wrap:wrap;
+
+  gap:7px;
+
+  justify-content:center;
+
+  padding:14px 8px;
+
+  background:#191e35;
+
+  position:sticky;
+
+  top:0;
+
+  z-index:5;
+
 }
-.card {
-  background: #292b43;
-  padding: 22px;
-  border-radius: 14px;
-  border: 1px solid #55506f;
-  margin-bottom: 18px;
+
+nav button{
+
+  border:0;
+
+  padding:10px 12px;
+
+  border-radius:8px;
+
+  background:#343b5c;
+
+  color:white;
+
+  font-weight:bold;
+
 }
-button, .upload {
-  display: inline-block;
-  background: #9268c9;
-  color: white;
-  padding: 12px 18px;
-  border: 0;
-  border-radius: 8px;
-  cursor: pointer;
-  margin: 5px 3px;
+
+nav button.active{background:#b94e91}
+
+main{max-width:950px;margin:auto;padding:18px}
+
+.panel{
+
+  display:none;
+
+  background:#1b223c;
+
+  border:1px solid #353e60;
+
+  border-radius:14px;
+
+  padding:20px;
+
+  margin-bottom:20px;
+
 }
-input {
-  max-width: 100%;
-  padding: 8px;
-  border-radius: 6px;
+
+.panel.active{display:block}
+
+h2{color:#f1a4cf;margin-top:0}
+
+h3{color:#f1c4df}
+
+label{
+
+  display:block;
+
+  margin:15px 0 7px;
+
+  color:#e6d9ef;
+
 }
-video {
-  width: 100%;
-  max-height: 420px;
-  margin-top: 15px;
-  background: black;
+
+input,select{
+
+  width:100%;
+
+  padding:12px;
+
+  border-radius:8px;
+
+  border:1px solid #596181;
+
+  background:#10172b;
+
+  color:white;
+
 }
-.controls {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
+
+input[type=range]{padding:0}
+
+button.action{
+
+  border:0;
+
+  border-radius:8px;
+
+  padding:12px 16px;
+
+  margin:8px 5px 8px 0;
+
+  background:#b94e91;
+
+  color:white;
+
+  font-weight:bold;
+
 }
-.controls label { display: block; }
-footer {
-  text-align: center;
-  padding: 25px;
-  color: #aaa;
+
+button.secondary{background:#46527b}
+
+button:disabled{opacity:.45}
+
+video{
+
+  width:100%;
+
+  max-height:400px;
+
+  background:#05070d;
+
+  border-radius:10px;
+
+  margin-top:12px;
+
 }
+
+.preview-wrap{
+
+  position:relative;
+
+}
+
+#titleOverlay{
+
+  position:absolute;
+
+  left:0;
+
+  right:0;
+
+  top:45%;
+
+  text-align:center;
+
+  font-size:25px;
+
+  font-weight:bold;
+
+  color:white;
+
+  text-shadow:2px 2px 5px black;
+
+  pointer-events:none;
+
+}
+
+.status{
+
+  background:#10172b;
+
+  border-radius:8px;
+
+  padding:12px;
+
+  margin-top:12px;
+
+  color:#c7d4ff;
+
+  overflow-wrap:anywhere;
+
+}
+
+.project{
+
+  background:#10172b;
+
+  padding:12px;
+
+  border-radius:8px;
+
+  margin:8px 0;
+
+}
+
+.development{
+
+  margin-top:35px;
+
+  padding:12px;
+
+  text-align:center;
+
+  border-top:1px solid #596181;
+
+  color:#f0a5cf;
+
+  font-style:italic;
+
+}
+
+.small{font-size:13px;color:#b9c2df}
+
+footer{
+
+  text-align:center;
+
+  padding:25px;
+
+  color:#aeb6d0;
+
+}
+
+a{color:#f3a6d0}
+
 </style>
+
 </head>
+
 <body>
 
 <header>
-<h1>â¨ My Creative Studio</h1>
-<p>Your private creative workspace</p>
+
+<h1>My Creative Studio</h1>
+
+<p>Your personal video creation studio</p>
+
 </header>
 
+<nav>
+
+<button class="active" onclick="showSection('editor',this)">Video editor</button>
+
+<button onclick="showSection('trimming',this)">Video trimming</button>
+
+<button onclick="showSection('ai',this)">AI video maker</button>
+
+<button onclick="showSection('photo',this)">Photo animation</button>
+
+<button onclick="showSection('voice',this)">Voice and music</button>
+
+<button onclick="showSection('workplace',this)">My workplace</button>
+
+</nav>
+
 <main>
-<h2>Welcome to your studio!</h2>
 
-<div class="card">
-<h2>ð¬ Video Editor</h2>
-<p>Choose a video from your iPad.</p>
-<input type="file" id="videoFile" accept="video/*">
-<video id="preview" controls playsinline></video>
-<p id="status">No video loaded yet.</p>
+<section id="editor" class="panel active">
+
+<h2>Video editor</h2>
+
+<p>Upload a video and prepare it for editing.</p>
+
+<label>Select your video</label>
+
+<input type="file" id="videoInput" accept="video/*">
+
+<div class="preview-wrap">
+
+<video id="video" controls playsinline></video>
+
+<div id="titleOverlay"></div>
+
 </div>
 
-<div class="card">
-<h2>âï¸ Video Trimming</h2>
-<p>Choose the part of your video you want to keep.</p>
+<h3>Editing controls</h3>
 
-<div class="controls">
-<label>
-Start time (seconds)
-<input type="number" id="startTime" min="0" value="0" step="0.5">
-</label>
+<label>Start time (seconds)</label>
 
-<label>
-End time (seconds)
-<input type="number" id="endTime" min="0" value="0" step="0.5">
-</label>
+<input type="number" id="startTime" min="0" value="0" step="0.1">
+
+<label>End time (seconds)</label>
+
+<input type="number" id="endTime" min="0" value="0" step="0.1">
+
+<button class="action" onclick="markStart()">Set start at current position</button>
+
+<button class="action" onclick="markEnd()">Set end at current position</button>
+
+<label>Playback speed</label>
+
+<select id="speed" onchange="changeSpeed()">
+
+<option value="0.5">0.5x — Slow</option>
+
+<option value="0.75">0.75x</option>
+
+<option value="1" selected>1x — Normal</option>
+
+<option value="1.25">1.25x</option>
+
+<option value="1.5">1.5x</option>
+
+<option value="2">2x — Fast</option>
+
+</select>
+
+<h3>Text on video</h3>
+
+<label>Your title or caption</label>
+
+<input type="text" id="titleText" placeholder="Write your video title">
+
+<button class="action" onclick="updateTitle()">Show text on preview</button>
+
+<button class="secondary action" onclick="clearTitle()">Remove text</button>
+
+<h3>Background music</h3>
+
+<label>Select music from your device</label>
+
+<input type="file" id="musicInput" accept="audio/*">
+
+<label>Music volume</label>
+
+<input type="range" id="musicVolume" min="0" max="100" value="35">
+
+<p class="small">Music is mixed into the export where browser recording support permits.</p>
+
+<button class="action" id="exportButton" onclick="exportVideo()">Export edited video</button>
+
+<div id="exportStatus" class="status">
+
+Upload a video to begin.
+
 </div>
 
-<p id="duration">Video duration: --</p>
+<a id="downloadLink" style="display:none" download="my-creative-video.mp4">
 
-<button id="playSelection">â¶ Preview selected section</button>
-<button id="stopPreview">â  Stop</button>
+Download your video
 
-<p id="trimStatus">Load a video to begin.</p>
+</a>
+
+</section>
+
+<section id="trimming" class="panel">
+
+<h2>Video trimming</h2>
+
+<p>Choose the beginning and end of the video you want to keep.</p>
+
+<button class="action" onclick="showSection('editor',document.querySelector('nav button'))">
+
+Open video editor
+
+</button>
+
+<div class="status">
+
+Upload your video in the Video editor section. Set the start and end times there, then export the selected portion.
+
 </div>
 
-<div class="card">
-<h2>â¨ AI Video Maker</h2>
-<p>Create videos from your ideas.</p>
-<p>Coming soon</p>
-</div>
+</section>
 
-<div class="card">
-<h2>ð¸ Photo Animation</h2>
-<p>Animate your photographs.</p>
-<p>Coming soon</p>
-</div>
+<section id="ai" class="panel">
 
-<div class="card">
-<h2>ð¤ Voice & Music</h2>
-<p>Add narration and music.</p>
-<p>Coming soon</p>
-</div>
+<h2>AI video maker</h2>
 
-<div class="card">
-<h2>My Workspace</h2>
-<p>Your creative projects will be developed here.</p>
-</div>
+<p>Create videos from ideas, descriptions and creative concepts.</p>
+
+<div class="development">In development</div>
+
+</section>
+
+<section id="photo" class="panel">
+
+<h2>Photo animation</h2>
+
+<p>Turn photographs into moving visual stories.</p>
+
+<div class="development">In development</div>
+
+</section>
+
+<section id="voice" class="panel">
+
+<h2>Voice and music</h2>
+
+<p>Prepare voice recordings, music and sound for your videos.</p>
+
+<div class="development">In development</div>
+
+</section>
+
+<section id="workplace" class="panel">
+
+<h2>My workplace</h2>
+
+<p>Save your project details in this browser.</p>
+
+<label>Project name</label>
+
+<input type="text" id="projectName" placeholder="My new video project">
+
+<label>Project notes</label>
+
+<input type="text" id="projectNotes" placeholder="Describe your project">
+
+<button class="action" onclick="saveProject()">Save project</button>
+
+<h3>My saved projects</h3>
+
+<div id="projects"></div>
+
+</section>
+
 </main>
 
-<footer>My Creative Studio Â© 2026</footer>
+<footer>
+
+My Creative Studio
+
+</footer>
 
 <script>
-const input = document.getElementById("videoFile");
-const video = document.getElementById("preview");
-const status = document.getElementById("status");
-const start = document.getElementById("startTime");
-const end = document.getElementById("endTime");
-const duration = document.getElementById("duration");
-const trimStatus = document.getElementById("trimStatus");
+
+const video = document.getElementById("video");
+
+const videoInput = document.getElementById("videoInput");
+
+const musicInput = document.getElementById("musicInput");
 
 let videoURL = null;
-let selectionPlaying = false;
 
-input.addEventListener("change", function() {
-  const file = this.files[0];
-  if (!file) return;
+let musicURL = null;
 
-  if (videoURL) URL.revokeObjectURL(videoURL);
-  videoURL = URL.createObjectURL(file);
-  video.src = videoURL;
-  status.textContent = "Video loaded: " + file.name;
-  trimStatus.textContent = "Your video is ready to preview.";
+let musicElement = null;
+
+let exportURL = null;
+
+function showSection(id,button){
+
+  document.querySelectorAll(".panel").forEach(p=>{
+
+    p.classList.remove("active");
+
+  });
+
+  document.getElementById(id).classList.add("active");
+
+  document.querySelectorAll("nav button").forEach(b=>{
+
+    b.classList.remove("active");
+
+  });
+
+  if(button) button.classList.add("active");
+
+}
+
+videoInput.addEventListener("change",function(){
+
+  const file=this.files[0];
+
+  if(!file)return;
+
+  if(videoURL)URL.revokeObjectURL(videoURL);
+
+  videoURL=URL.createObjectURL(file);
+
+  video.src=videoURL;
+
+  document.getElementById("exportStatus").textContent=
+
+    "Video loaded: "+file.name;
+
+  video.addEventListener("loadedmetadata",function(){
+
+    document.getElementById("startTime").value=0;
+
+    document.getElementById("endTime").value=video.duration.toFixed(1);
+
+  },{once:true});
+
 });
 
-video.addEventListener("loadedmetadata", function() {
-  start.value = 0;
-  end.value = video.duration.toFixed(1);
-  end.max = video.duration;
-  start.max = video.duration;
-  duration.textContent =
-    "Video duration: " + video.duration.toFixed(1) + " seconds";
+musicInput.addEventListener("change",function(){
+
+  const file=this.files[0];
+
+  if(!file)return;
+
+  if(musicURL)URL.revokeObjectURL(musicURL);
+
+  musicURL=URL.createObjectURL(file);
+
+  document.getElementById("exportStatus").textContent=
+
+    "Music loaded: "+file.name;
+
 });
 
-document.getElementById("playSelection").addEventListener("click", function() {
-  const from = Number(start.value);
-  const to = Number(end.value);
+function markStart(){
 
-  if (!video.src) {
-    trimStatus.textContent = "Please load a video first.";
+  if(!video.src)return;
+
+  document.getElementById("startTime").value=
+
+    video.currentTime.toFixed(1);
+
+}
+
+function markEnd(){
+
+  if(!video.src)return;
+
+  document.getElementById("endTime").value=
+
+    video.currentTime.toFixed(1);
+
+}
+
+function changeSpeed(){
+
+  video.playbackRate=parseFloat(
+
+    document.getElementById("speed").value
+
+  );
+
+}
+
+function updateTitle(){
+
+  document.getElementById("titleOverlay").textContent=
+
+    document.getElementById("titleText").value;
+
+}
+
+function clearTitle(){
+
+  document.getElementById("titleOverlay").textContent="";
+
+  document.getElementById("titleText").value="";
+
+}
+
+function saveProject(){
+
+  const name=document.getElementById("projectName").value.trim();
+
+  const notes=document.getElementById("projectNotes").value.trim();
+
+  if(!name){
+
+    alert("Please enter a project name.");
+
     return;
+
   }
 
-  if (from < 0 || to > video.duration || from >= to) {
-    trimStatus.textContent = "Please enter a valid start and end time.";
+  const projects=JSON.parse(localStorage.getItem("creativeProjects")||"[]");
+
+  projects.push({
+
+    name:name,
+
+    notes:notes,
+
+    date:new Date().toLocaleString()
+
+  });
+
+  localStorage.setItem("creativeProjects",JSON.stringify(projects));
+
+  document.getElementById("projectName").value="";
+
+  document.getElementById("projectNotes").value="";
+
+  displayProjects();
+
+}
+
+function displayProjects(){
+
+  const projects=JSON.parse(localStorage.getItem("creativeProjects")||"[]");
+
+  const box=document.getElementById("projects");
+
+  box.innerHTML="";
+
+  projects.forEach((p,index)=>{
+
+    const item=document.createElement("div");
+
+    item.className="project";
+
+    const title=document.createElement("strong");
+
+    title.textContent=p.name;
+
+    const notes=document.createElement("p");
+
+    notes.textContent=p.notes;
+
+    const date=document.createElement("small");
+
+    date.textContent=p.date;
+
+    const remove=document.createElement("button");
+
+    remove.className="action";
+
+    remove.textContent="Delete";
+
+    remove.onclick=function(){
+
+      const updated=JSON.parse(localStorage.getItem("creativeProjects")||"[]");
+
+      updated.splice(index,1);
+
+      localStorage.setItem("creativeProjects",JSON.stringify(updated));
+
+      displayProjects();
+
+    };
+
+    item.append(title,notes,date,document.createElement("br"),remove);
+
+    box.appendChild(item);
+
+  });
+
+}
+
+async function exportVideo(){
+
+  const status=document.getElementById("exportStatus");
+
+  const button=document.getElementById("exportButton");
+
+  const link=document.getElementById("downloadLink");
+
+  if(!videoURL){
+
+    status.textContent="Please upload a video first.";
+
     return;
+
   }
 
-  video.currentTime = from;
-  selectionPlaying = true;
-  video.play();
-  trimStatus.textContent =
-    "Previewing from " + from + " to " + to + " seconds.";
-});
+  const start=parseFloat(document.getElementById("startTime").value);
 
-video.addEventListener("timeupdate", function() {
-  if (selectionPlaying && video.currentTime >= Number(end.value)) {
+  const end=parseFloat(document.getElementById("endTime").value);
+
+  if(!Number.isFinite(start)||!Number.isFinite(end)||
+
+     start<0||end<=start||end>video.duration){
+
+    status.textContent="Please enter valid start and end times.";
+
+    return;
+
+  }
+
+  if(!window.MediaRecorder||!HTMLCanvasElement.prototype.captureStream){
+
+    status.textContent=
+
+      "Your browser does not support the recording features needed for export. Try an updated Safari browser or use iMovie on your iPad.";
+
+    return;
+
+  }
+
+  let mimeType="";
+
+  const types=[
+
+    "video/mp4",
+
+    "video/webm;codecs=vp9",
+
+    "video/webm;codecs=vp8",
+
+    "video/webm"
+
+  ];
+
+  for(const type of types){
+
+    if(MediaRecorder.isTypeSupported(type)){
+
+      mimeType=type;
+
+      break;
+
+    }
+
+  }
+
+  if(!mimeType){
+
+    status.textContent="No compatible video export format was found in this browser.";
+
+    return;
+
+  }
+
+  button.disabled=true;
+
+  link.style.display="none";
+
+  status.textContent="Preparing your video...";
+
+  const canvas=document.createElement("canvas");
+
+  canvas.width=1280;
+
+  canvas.height=720;
+
+  const ctx=canvas.getContext("2d");
+
+  const stream=canvas.captureStream(30);
+
+  let audioContext=null;
+
+  let musicSource=null;
+
+  let musicGain=null;
+
+  let audioDestination=null;
+
+  try{
+
+    if(musicURL){
+
+      audioContext=new (window.AudioContext||window.webkitAudioContext)();
+
+      await audioContext.resume();
+
+      audioDestination=audioContext.createMediaStreamDestination();
+
+      musicElement=new Audio(musicURL);
+
+      musicElement.loop=true;
+
+      musicSource=audioContext.createMediaElementSource(musicElement);
+
+      musicGain=audioContext.createGain();
+
+      musicGain.gain.value=
+
+        Number(document.getElementById("musicVolume").value)/100;
+
+      musicSource.connect(musicGain);
+
+      musicGain.connect(audioDestination);
+
+      audioDestination.stream.getAudioTracks().forEach(track=>{
+
+        stream.addTrack(track);
+
+      });
+
+    }
+
+    const recorder=new MediaRecorder(stream,{mimeType});
+
+    const chunks=[];
+
+    recorder.ondataavailable=e=>{
+
+      if(e.data&&e.data.size)chunks.push(e.data);
+
+    };
+
+    recorder.onerror=e=>{
+
+      status.textContent="Recording error: "+e.error.message;
+
+      button.disabled=false;
+
+    };
+
+    recorder.onstop=()=>{
+
+      const blob=new Blob(chunks,{type:mimeType});
+
+      if(exportURL)URL.revokeObjectURL(exportURL);
+
+      exportURL=URL.createObjectURL(blob);
+
+      link.href=exportURL;
+
+      link.download=mimeType.includes("mp4")?
+
+        "my-creative-video.mp4":"my-creative-video.webm";
+
+      link.textContent="Download your finished video";
+
+      link.style.display="inline-block";
+
+      status.textContent="Export finished. Use the download link to save your video.";
+
+      button.disabled=false;
+
+      if(musicElement){
+
+        musicElement.pause();
+
+        musicElement.currentTime=0;
+
+      }
+
+      if(audioContext)audioContext.close();
+
+      stream.getTracks().forEach(track=>track.stop());
+
+    };
+
+    const title=document.getElementById("titleText").value;
+
+    const speed=parseFloat(document.getElementById("speed").value);
+
     video.pause();
-    selectionPlaying = false;
-    trimStatus.textContent = "Selected section preview finished.";
-  }
-});
 
-document.getElementById("stopPreview").addEventListener("click", function() {
-  video.pause();
-  selectionPlaying = false;
-  trimStatus.textContent = "Preview stopped.";
-});
+    video.currentTime=start;
+
+    video.playbackRate=speed;
+
+    await new Promise((resolve,reject)=>{
+
+      video.addEventListener("seeked",resolve,{once:true});
+
+      video.addEventListener("error",reject,{once:true});
+
+    });
+
+    recorder.start(500);
+
+    if(musicElement){
+
+      await musicElement.play();
+
+    }
+
+    await video.play();
+
+    status.textContent="Recording your edited video...";
+
+    await new Promise((resolve,reject)=>{
+
+      function drawFrame(){
+
+        if(video.currentTime>=end||video.ended){
+
+          video.pause();
+
+          recorder.stop();
+
+          resolve();
+
+          return;
+
+        }
+
+        ctx.fillStyle="#000";
+
+        ctx.fillRect(0,0,canvas.width,canvas.height);
+
+        const vw=video.videoWidth;
+
+        const vh=video.videoHeight;
+
+        if(vw&&vh){
+
+          const scale=Math.min(canvas.width/vw,canvas.height/vh);
+
+          const w=vw*scale;
+
+          const h=vh*scale;
+
+          ctx.drawImage(
+
+            video,
+
+            (canvas.width-w)/2,
+
+            (canvas.height-h)/2,
+
+            w,h
+
+          );
+
+        }
+
+        if(title){
+
+          ctx.font="bold 44px Arial";
+
+          ctx.textAlign="center";
+
+          ctx.lineWidth=4;
+
+          ctx.strokeStyle="black";
+
+          ctx.fillStyle="white";
+
+          ctx.strokeText(title,canvas.width/2,canvas.height-75);
+
+          ctx.fillText(title,canvas.width/2,canvas.height-75);
+
+        }
+
+        requestAnimationFrame(drawFrame);
+
+      }
+
+      video.addEventListener("ended",()=>{
+
+        if(recorder.state==="recording")recorder.stop();
+
+        resolve();
+
+      },{once:true});
+
+      drawFrame();
+
+    });
+
+  }catch(error){
+
+    status.textContent="Export could not complete: "+error.message+
+
+      ". Your browser may not support this recording method.";
+
+    button.disabled=false;
+
+    if(musicElement)musicElement.pause();
+
+    if(audioContext)audioContext.close();
+
+    stream.getTracks().forEach(track=>track.stop());
+
+  }
+
+}
+
+displayProjects();
+
 </script>
 
 </body>
+
 </html>
