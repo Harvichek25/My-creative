@@ -986,6 +986,231 @@ displayProjects();
 
 </script>
 
+<script>
+(function(){
+  const dogs = [
+    {id:"harvey",name:"Harvey",description:"14.5 years • Long-haired blonde • Calm and dignified"},
+    {id:"julie",name:"Julie",description:"3.5 years • Short-haired red • Spirited and feisty"},
+    {id:"leo",name:"Leo",description:"2.5 years • Short-haired blonde • Sturdy and confident"}
+  ];
+
+  const panel = document.getElementById("photo");
+  if(!panel) return;
+
+  panel.innerHTML = `
+    <h2>Advanced Dog Cartoon Studio</h2>
+    <p>Your private photo and character workspace.</p>
+    <h3>My Dog Characters</h3>
+    <div id="dogProfiles" class="dog-profiles"></div>
+    <label for="dogSelect">Choose a dog's photo folder</label>
+    <select id="dogSelect">
+      <option value="harvey">Harvey</option>
+      <option value="julie">Julie</option>
+      <option value="leo">Leo</option>
+    </select>
+    <label for="dogPhotoInput">Upload photographs</label>
+    <input type="file" id="dogPhotoInput" accept="image/*" multiple>
+    <p class="small">Select one or several photographs from your iPad.</p>
+    <div id="dogStorageStatus" class="status">Preparing local storage...</div>
+    <h3>My Photo Collection</h3>
+    <div id="dogPhotoGallery" class="dog-gallery"></div>
+  `;
+
+  const style = document.createElement("style");
+  style.textContent = `
+    .dog-profiles,.dog-gallery {
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(130px,1fr));
+      gap:12px;
+      margin:15px 0;
+    }
+    .dog-profile,.dog-photo {
+      background:#10172b;
+      border:1px solid #596181;
+      border-radius:10px;
+      padding:12px;
+      min-width:0;
+    }
+    .dog-profile {
+      color:white;
+      text-align:left;
+      cursor:pointer;
+    }
+    .dog-profile.selected {border:2px solid #e78aaf}
+    .dog-photo img {
+      width:100%;
+      aspect-ratio:1;
+      object-fit:cover;
+      border-radius:7px;
+    }
+    .dog-photo p {overflow-wrap:anywhere;font-size:13px}
+  `;
+  document.head.appendChild(style);
+
+  const profiles = document.getElementById("dogProfiles");
+  const select = document.getElementById("dogSelect");
+  const upload = document.getElementById("dogPhotoInput");
+  const gallery = document.getElementById("dogPhotoGallery");
+  const status = document.getElementById("dogStorageStatus");
+
+  let db;
+  let previewURLs = [];
+
+  dogs.forEach(dog => {
+    const button = document.createElement("button");
+    button.className = "dog-profile";
+    button.type = "button";
+    button.innerHTML = "<strong>" + dog.name + "</strong><p class='small'>" + dog.description + "</p>";
+    button.addEventListener("click",()=>{
+      select.value = dog.id;
+      renderProfiles();
+      renderPhotos();
+    });
+    profiles.appendChild(button);
+  });
+
+  function renderProfiles(){
+    [...profiles.children].forEach((button,index)=>{
+      button.classList.toggle("selected",dogs[index].id===select.value);
+    });
+  }
+
+  function openDatabase(){
+    if(!window.indexedDB){
+      status.textContent="Local database is not available in this browser.";
+      return;
+    }
+
+    const request = indexedDB.open("MyCreativeDogStudio",1);
+
+    request.onupgradeneeded = function(){
+      const database = request.result;
+      ["dogs","photos","projects","assets","settings"].forEach(name=>{
+        if(!database.objectStoreNames.contains(name)){
+          database.createObjectStore(name,{keyPath:"id"});
+        }
+      });
+    };
+
+    request.onerror = function(){
+      status.textContent="Could not open local storage. Please tell me.";
+    };
+
+    request.onsuccess = function(){
+      db = request.result;
+
+      const transaction = db.transaction("dogs","readwrite");
+      const store = transaction.objectStore("dogs");
+      dogs.forEach(dog=>store.put(dog));
+
+      transaction.oncomplete = function(){
+        status.textContent="Local database ready. Your dog profiles are saved in this Safari browser.";
+        renderProfiles();
+        renderPhotos();
+        if(navigator.storage && navigator.storage.persist){
+          navigator.storage.persist().catch(()=>{});
+        }
+      };
+    };
+  }
+
+  function renderPhotos(){
+    if(!db) return;
+
+    previewURLs.forEach(url=>URL.revokeObjectURL(url));
+    previewURLs = [];
+    gallery.replaceChildren();
+
+    const request = db.transaction("photos","readonly")
+      .objectStore("photos").getAll();
+
+    request.onsuccess = function(){
+      const photos = request.result
+        .filter(photo=>photo.dogId===select.value)
+        .sort((a,b)=>b.createdAt-a.createdAt);
+
+      if(!photos.length){
+        gallery.textContent="No photographs yet. Upload your first pictures above.";
+        return;
+      }
+
+      photos.forEach(photo=>{
+        const card = document.createElement("div");
+        card.className="dog-photo";
+
+        const image = document.createElement("img");
+        const url = URL.createObjectURL(photo.blob);
+        previewURLs.push(url);
+        image.src=url;
+        image.alt=photo.name;
+
+        const name = document.createElement("p");
+        name.textContent=photo.name;
+
+        const remove = document.createElement("button");
+        remove.className="action";
+        remove.textContent="Delete";
+        remove.addEventListener("click",()=>deletePhoto(photo.id));
+
+        card.append(image,name,remove);
+        gallery.appendChild(card);
+      });
+    };
+  }
+
+  upload.addEventListener("change",async function(){
+    if(!db || !upload.files.length) return;
+
+    const files = Array.from(upload.files)
+      .filter(file=>file.type.startsWith("image/"));
+
+    status.textContent="Saving photographs...";
+
+    try{
+      for(const file of files){
+        await new Promise((resolve,reject)=>{
+          const transaction=db.transaction("photos","readwrite");
+          transaction.objectStore("photos").put({
+            id:Date.now()+"-"+Math.random().toString(36).slice(2),
+            dogId:select.value,
+            name:file.name,
+            type:file.type,
+            blob:file,
+            createdAt:Date.now()
+          });
+          transaction.oncomplete=resolve;
+          transaction.onerror=()=>reject(transaction.error);
+        });
+      }
+
+      status.textContent=files.length+" photograph(s) saved in "+select.value+"'s local collection.";
+      upload.value="";
+      renderPhotos();
+    }catch(error){
+      status.textContent="Could not save photographs: "+error.message;
+    }
+  });
+
+  function deletePhoto(id){
+    if(!confirm("Delete this photograph from the local collection?")) return;
+
+    const transaction=db.transaction("photos","readwrite");
+    transaction.objectStore("photos").delete(id);
+    transaction.oncomplete=function(){
+      status.textContent="Photograph deleted.";
+      renderPhotos();
+    };
+  }
+
+  select.addEventListener("change",()=>{
+    renderProfiles();
+    renderPhotos();
+  });
+
+  openDatabase();
+})();
+</script>
+
 </body>
 
 </html>
