@@ -1210,7 +1210,38 @@ displayProjects();
   openDatabase();
 })();
 </script>
+<script>
+(function(){
+  const gallery=document.getElementById("dogPhotoGallery");
+  if(!gallery)return;
 
+  const viewer=document.createElement("div");
+  viewer.id="dogPhotoViewer";
+  viewer.style.cssText="display:none;position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.95);align-items:center;justify-content:center;flex-direction:column;padding:20px";
+
+  viewer.innerHTML=`
+    <button id="dogViewerClose" style="position:absolute;top:25px;right:20px;padding:12px 22px;background:#b94e91;color:white;border:0;border-radius:8px;font-size:16px">Close ✕</button>
+    <img id="dogViewerImage" style="max-width:95vw;max-height:82vh;object-fit:contain">
+  `;
+
+  document.body.appendChild(viewer);
+
+  gallery.addEventListener("click",function(e){
+    const img=e.target.closest(".dog-photo img");
+    if(!img)return;
+    document.getElementById("dogViewerImage").src=img.src;
+    viewer.style.display="flex";
+  });
+
+  document.getElementById("dogViewerClose").onclick=()=>{
+    viewer.style.display="none";
+  };
+
+  viewer.addEventListener("click",function(e){
+    if(e.target===viewer)viewer.style.display="none";
+  });
+})();
+</script>
 </body>
 
 </html>
